@@ -53,9 +53,17 @@ namespace DepartmentCourse
             command.ExecuteNonQuery();
         }
 
-        public void AddRoom(string Number, float Square, int RoomTypeId) 
+        public void AddRoom(string Name, float Square, int RoomTypeId) 
         {
-            string query = $"INSERT INTO room (Number, Square, RoomTypeId) VALUES ('{Number}', '{Square}', '{RoomTypeId}');";
+            string query = $"INSERT INTO room (name, Square, idroomtype) VALUES ('{Name}', '{Square}', '{RoomTypeId}');";
+            MySqlCommand command = new MySqlCommand(query, _connection);
+
+            command.ExecuteNonQuery();
+        }
+
+        public void AddDocument(string Name, string DateClaim, string DateGive, int RoomId, int DptId) 
+        {
+            string query = $"INSERT INTO document (name, Date_zakrepleniya, Data_peredachi, RoomID, DepartamentID) VALUES ('{Name}', '{DateClaim}', '{DateGive}', '{RoomId}', '{DptId}');";
             MySqlCommand command = new MySqlCommand(query, _connection);
 
             command.ExecuteNonQuery();
@@ -65,7 +73,7 @@ namespace DepartmentCourse
         {
             if (!string.IsNullOrEmpty(HeadDepartment)) 
             {
-                string query = $"INSERT INTO department (Name, ShortName, Rod, Dat, HeadDepartmentId) VALUES ('{Name}', '{ShortName}', '{Rod}', '{Dat}', '{HeadDepartment.Split(' ')[0]}');";
+                string query = $"INSERT INTO department (Name, ShortName, Rod, Dat, id_head_department) VALUES ('{Name}', '{ShortName}', '{Rod}', '{Dat}', '{HeadDepartment.Split(' ')[0]}');";
                 MySqlCommand command = new MySqlCommand(query, _connection);
 
                 command.ExecuteNonQuery();
