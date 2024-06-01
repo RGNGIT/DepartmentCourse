@@ -158,16 +158,24 @@ namespace DepartmentCourse
 
         private void task1_Click(object sender, EventArgs e)
         {
+            string query = $"SELECT a.name as Подразделение, c.name as Помещение, d.name as 'Тип помещения' FROM department a JOIN document b ON b.DepartamentID = a.id_department JOIN room c ON b.RoomID = c.idroom JOIN room_type d ON c.idroomtype = d.idroom_type WHERE b.Date_zakrepleniya >= '{dateTimePickerTask1From.Value.ToString("yyyy-MM-dd")}' AND b.Date_zakrepleniya <= '{dateTimePickerTask1To.Value.ToString("yyyy-MM-dd")}' ORDER BY a.name;";
+
+            textBoxTask1.Text = query;
+
             using (DatabaseWorks db = new DatabaseWorks())
-                dataGridViewTask1.DataSource = db.SelectScript($"SELECT a.name as Подразделение, c.name as Помещение, d.name as 'Тип помещения' FROM department a JOIN document b ON b.DepartamentID = a.id_department JOIN room c ON b.RoomID = c.idroom JOIN room_type d ON c.idroomtype = d.idroom_type WHERE b.Date_zakrepleniya >= '{dateTimePickerTask1From.Value.ToString("yyyy-MM-dd")}' AND b.Date_zakrepleniya <= '{dateTimePickerTask1To.Value.ToString("yyyy-MM-dd")}' ORDER BY a.name;");
+                dataGridViewTask1.DataSource = db.SelectScript(query);
         }
 
         private void tabControl2_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (tabControl2.SelectedIndex == 1) 
             {
+                string query = $"WITH RECURSIVE DepartmentHierarchy AS (   SELECT       id_department,        name,       id_head_department,      0 AS level    FROM        Department   WHERE       id_head_department = 0   UNION ALL   SELECT      d.id_department,       d.name,      d.id_head_department,     dh.level + 1 AS level   FROM       Department d    INNER JOIN       DepartmentHierarchy dh ON d.id_head_department = dh.id_department)SELECT    id_department,   name,    (select s.name from department s where s.id_department = id_head_department) as 'Головное подразделение',   level as 'Глубина' FROM    DepartmentHierarchy ORDER BY    level, id_department;";
+
+                textBoxTask2.Text = query;
+
                 using (DatabaseWorks db = new DatabaseWorks())
-                    dataGridViewTask2.DataSource = db.SelectScript($"WITH RECURSIVE DepartmentHierarchy AS (   SELECT       id_department,        name,       id_head_department,      0 AS level    FROM        Department   WHERE       id_head_department = 0   UNION ALL   SELECT      d.id_department,       d.name,      d.id_head_department,     dh.level + 1 AS level   FROM       Department d    INNER JOIN       DepartmentHierarchy dh ON d.id_head_department = dh.id_department)SELECT    id_department,   name,    (select s.name from department s where s.id_department = id_head_department) as 'Головное подразделение',   level as 'Глубина' FROM    DepartmentHierarchy ORDER BY    level, id_department;");
+                    dataGridViewTask2.DataSource = db.SelectScript(query);
             }
 
             if (tabControl2.SelectedIndex == 2) 
@@ -184,8 +192,12 @@ namespace DepartmentCourse
 
         private void buttonTask3_Click(object sender, EventArgs e)
         {
+            string query = $"SELECT a.name as Подразделение, c.name as Помещение, d.name as 'Тип помещения', (SELECT SUM(aa.square) FROM room aa, document bb WHERE bb.id = b.id AND bb.RoomID = aa.idroom) as 'Добавочная площадь', b.Date_zakrepleniya as 'Дата закрепления' FROM department a JOIN document b ON b.DepartamentID = a.id_department JOIN room c ON b.RoomID = c.idroom JOIN room_type d ON c.idroomtype = d.idroom_type WHERE b.Date_zakrepleniya >= '{dateTimePickerTask3From.Value.ToString("yyyy-MM-dd")}' AND b.Date_zakrepleniya <= '{dateTimePickerTask3To.Value.ToString("yyyy-MM-dd")}' AND a.id_department = '{comboBoxTask3Dpt.Text.Split(' ')[0]}' ORDER BY a.name;";
+
+            textBoxTask3.Text = query;
+
             using (DatabaseWorks db = new DatabaseWorks())
-                dataGridViewTask3.DataSource = db.SelectScript($"SELECT a.name as Подразделение, c.name as Помещение, d.name as 'Тип помещения', (SELECT SUM(aa.square) FROM room aa, document bb WHERE bb.id = b.id AND bb.RoomID = aa.idroom) as 'Добавочная площадь', b.Date_zakrepleniya as 'Дата закрепления' FROM department a JOIN document b ON b.DepartamentID = a.id_department JOIN room c ON b.RoomID = c.idroom JOIN room_type d ON c.idroomtype = d.idroom_type WHERE b.Date_zakrepleniya >= '{dateTimePickerTask3From.Value.ToString("yyyy-MM-dd")}' AND b.Date_zakrepleniya <= '{dateTimePickerTask3To.Value.ToString("yyyy-MM-dd")}' AND a.id_department = '{comboBoxTask3Dpt.Text.Split(' ')[0]}' ORDER BY a.name;");
+                dataGridViewTask3.DataSource = db.SelectScript(query);
         }
     }
 }
